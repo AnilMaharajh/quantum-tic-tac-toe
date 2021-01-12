@@ -1,2 +1,2 @@
-# quantum-tic-tac-toe
+# Quantum-tic-tac-toe
 A pygame version of Quantum Tic Tac Toe
