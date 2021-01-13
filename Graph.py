@@ -1,12 +1,15 @@
 # Inspired from :
 #https://www.geeksforgeeks.org/detect-cycle-undirected-graph/
 
-from typing import Tuple,Set,List
+from typing import Tuple, Set, List
+
 '''
 Graph keeps track of all the edges that 
 are present in the graph and checks the presence of 
 a cycle in the graph.
 '''
+
+
 class Graph():
     def __init__(self):
         self.visited = []
@@ -26,7 +29,7 @@ class Graph():
         else:
             self.edges.append((x,y))
 
-    def addVisited(self, coord:tuple):
+    def addVisited(self, coord: tuple):
         '''
         Adds coord to the list of visited
         edges.
