@@ -87,7 +87,7 @@ window_surface.fill(WHITE)
 # clock = pygame.time.Clock()
 is_running = True
 start = False
-entangle = True
+entangle = False
 
 while is_running:
     if not start:
