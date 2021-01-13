@@ -1,6 +1,7 @@
-#This takes inspiration from the idea demonstrated in https://www.geeksforgeeks.org/detect-cycle-undirected-graph/
+# Inspired from :
+#https://www.geeksforgeeks.org/detect-cycle-undirected-graph/
 
-from typing import Tuple, Set, List
+from typing import Tuple, List
 
 '''
 Graph keeps track of all the edges that 
@@ -72,25 +73,30 @@ class Graph():
     def cyclicEntanglement(self):
         '''
         Checks to see if there is a cycle in the
-        Graph. If there is it returns True, else
-        it returns False
-        :return:
+        Graph. If there is a cycle it returns a list
+        with the edges that make the cycle, else it returns an
+        empty list.
+        :return: list of edges that make the cycle
         '''
         for coord in self.edges:
             stack = self.neighbors(coord)
             found = False
+            points = [coord]
             while len(stack) > 0 and found == False:
                 neighbor,compare = stack.pop(0)
+                points.append(neighbor)
                 if neighbor[compare] == coord[0] or neighbor[compare]== coord[1]:
                     found = True
                 else:
                     more_neighbors = self.neighbors(neighbor)
                     for n in more_neighbors:
                         stack.insert(0, n)
+                    if len(more_neighbors) == 0:
+                        points = [coord]
             if found:
-                return True
+                return points
             self.clearVisited()
-        return False
+        return []
 
     def removeDuplicates(self):
         temp = []
@@ -106,8 +112,8 @@ def equals(one:tuple,two:tuple):
 
 if __name__ == "__main__":
     g = Graph()
-    g.addEdge(1, 5)
-    g.addEdge(2, 4)
+    g.addEdge(0, 5)
+    g.addEdge(0, 2)
     g.addEdge(2, 5)
-    g.addEdge(4, 1)
+    #g.addEdge(4, 1)
     print(g.cyclicEntanglement())
