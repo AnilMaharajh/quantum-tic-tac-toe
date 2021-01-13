@@ -106,13 +106,3 @@ class Graph():
                 temp.append(edge)
         self.edges = temp
 
-def equals(one:tuple,two:tuple):
-    return one==two or (one[1] == two[0] and one[0] == two[1])
-
-if __name__ == "__main__":
-    g = Graph()
-    g.addEdge(0, 5)
-    g.addEdge(0, 2)
-    g.addEdge(2, 5)
-    #g.addEdge(4, 1)
-    print(g.cyclicEntanglement())
