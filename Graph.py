@@ -1,28 +1,30 @@
-# Inspired from Tutorials Point:
-# https://www.tutorialspoint.com/python-program-for-detect-cycle-in-a-directed-graph
+# Inspired from :
+#https://www.geeksforgeeks.org/detect-cycle-undirected-graph/
 
 from typing import Tuple,Set,List
 '''
 Graph keeps track of all the edges that 
 are present in the graph and checks the presence of 
 a cycle in the graph.
-
 '''
 class Graph():
     def __init__(self):
         self.visited = []
         self.edges = []
 
-    def addEdge(self, coord: tuple):
+    def addEdge(self, x: int, y:int):
         '''
         Adds coord to the list of edges
-        present in the Graph
+        present in the Graph. Each edge will always
+        have the lower vertice first.
         :param coord: The edge that has to be added
         to the Graph
         :return:
         '''
-        if tuple not in self.edges:
-            self.edges.append(coord)
+        if x > y:
+            self.edges.append((y,x))
+        else:
+            self.edges.append((x,y))
 
     def addVisited(self, coord:tuple):
         '''
@@ -55,12 +57,14 @@ class Graph():
         :param major: A tuple that represents an edge
         '''
         neighbors = []
+        self.addVisited(major)
+        v1,v2 = major
         for edge in self.edges:
-            if edge != major and (major[1] != edge[0] and major[0] != edge[1]):
-                if edge[0] == major[0] or edge[0] == major[1]:
-                    neighbors.append(edge)
-                elif edge[1] == major[1] or edge[1] == major[0]:
-                    neighbors.append(edge)
+            if edge not in self.visited:
+                if v1 == edge[0] or v2 == edge[0]:
+                    neighbors.append((edge,1))
+                elif v1 == edge[1] or v2 == edge[1]:
+                    neighbors.append((edge,0))
         return neighbors
 
     def cyclicEntanglement(self):
@@ -74,11 +78,10 @@ class Graph():
             stack = self.neighbors(coord)
             found = False
             while len(stack) > 0 and found == False:
-                neighbor = stack.pop(0)
-                if neighbor in self.visited:
+                neighbor,compare = stack.pop(0)
+                if neighbor[compare] == coord[0] or neighbor[compare]== coord[1]:
                     found = True
                 else:
-                    self.addVisited(neighbor)
                     more_neighbors = self.neighbors(neighbor)
                     for n in more_neighbors:
                         stack.insert(0, n)
@@ -87,10 +90,22 @@ class Graph():
             self.clearVisited()
         return False
 
+    def removeDuplicates(self):
+        temp = []
+        for edge in self.edges:
+            if edge in temp:
+                pass
+            else:
+                temp.append(edge)
+        self.edges = temp
+
+def equals(one:tuple,two:tuple):
+    return one==two or (one[1] == two[0] and one[0] == two[1])
+
 if __name__ == "__main__":
     g = Graph()
-    g.addEdge((1,5))
-    g.addEdge((2,4))
-    g.addEdge((2,5))
-    g.addEdge((4,1))
+    g.addEdge(1, 5)
+    g.addEdge(2, 4)
+    g.addEdge(2, 5)
+    g.addEdge(4, 1)
     print(g.cyclicEntanglement())
