@@ -6,16 +6,52 @@ FONT_SIZE = 30
 WIDTH = 1350
 HEIGHT = 800
 GAME_WIDTH = WIDTH * 2 // 3
-GAME_HEIGHT = HEIGHT * 3 // 4
+GAME_HEIGHT = HEIGHT * 3 // 4 + 3
 KEY_COOR = []
 for i in range(225, 1125, 300):
-    for j in range(100, 700, 200):
-        KEY_COOR.append((i + 2.5, j + 2.5, 297.5, 197.5))
+    for j in range(100, 703, 201):
+        KEY_COOR.append((i + 2.5, j + 2.5, 297.5, 198.5))
+
+KEY_COOR_SMALL = []
+for i in range(225, 1125, 100):
+    for j in range(100, 703, 67):
+        KEY_COOR_SMALL.append((i + 2.5, j + 2.5, 97.5, 64.5))
+
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
+SUB = str.maketrans("0123456789", "₀₁₂₃₄₅₆₇₈₉")
+SUP = str.maketrans("0123456789", "⁰¹²³⁴⁵⁶⁷⁸⁹")
+
+
+def place_marker(x, y, char: str, num):
+    """Given x, y coordinates, the player character and the subscript, places
+    the marker on the quantum board"""
+    for index in range(len(KEY_COOR_SMALL)):
+        bool1 = KEY_COOR_SMALL[index][0] <= x < KEY_COOR_SMALL[index][2] + KEY_COOR_SMALL[index][0]
+        bool2 = KEY_COOR_SMALL[index][1] <= y < KEY_COOR_SMALL[index][3] + KEY_COOR_SMALL[index][1]
+
+        if bool1 and bool2 and char.lower() == "x":
+            font1 = pygame.font.Font('freesansbold.ttf', 32)
+            text1 = font1.render(f'X{num}'.translate(SUB), True, BLACK, WHITE)
+            text_rect = text1.get_rect()
+            text_rect.center = (
+                KEY_COOR_SMALL[index][0] + KEY_COOR_SMALL[index][2]/2,
+                KEY_COOR_SMALL[index][1] + KEY_COOR_SMALL[index][3]/2
+            )
+            window_surface.blit(text1, text_rect)
+
+        elif bool1 and bool2 and char.lower() == "0":
+            font1 = pygame.font.Font('freesansbold.ttf', 32)
+            text1 = font1.render(f'O{num}'.translate(SUB), True, BLACK, WHITE)
+            text_rect = text1.get_rect()
+            text_rect.center = (
+                KEY_COOR_SMALL[index][0] + KEY_COOR_SMALL[index][2]/2,
+                KEY_COOR_SMALL[index][1] + KEY_COOR_SMALL[index][3]/2
+            )
+            window_surface.blit(text1, text_rect)
 
 
 def entangle_move(x, y, char: str):
@@ -33,8 +69,8 @@ def entangle_move(x, y, char: str):
             text1 = font1.render('X', True, BLACK, WHITE)
             text_rect = text1.get_rect()
             text_rect.center = (
-                KEY_COOR[index][0] + KEY_COOR[index][2],
-                KEY_COOR[index][1] + KEY_COOR[index][3]
+                KEY_COOR[index][0] + KEY_COOR[index][2]/2,
+                KEY_COOR[index][1] + KEY_COOR[index][3]/2
             )
             window_surface.blit(text1, text_rect)
         elif bool1 and bool2 and char.lower() == "o":
@@ -109,7 +145,7 @@ window_surface.fill(WHITE)
 # clock = pygame.time.Clock()
 is_running = True
 start = False
-entangle = True
+entangle = False
 
 while is_running:
     if not start:
@@ -125,7 +161,9 @@ while is_running:
                 create_grid()
 
             elif start and not entangle:
-                pass
+                # Right now the third parameter is "X", but it can be whatever
+                # you like later, same with the fourth parameter
+                place_marker(event.pos[0], event.pos[1], "X", 1)
 
             elif start and entangle:
                 # Right now the third parameter is "O", but it can be whatever
