@@ -5,7 +5,7 @@ import tictactoe
 if __name__ == "__main__":
     pygame.init()
 
-    pygame.display.set_caption('Quick Start')
+    pygame.display.set_caption('Quantum Tic-Tac-Toe')
     window_surface = pygame.display.set_mode((800, 600))
 
     background = pygame.Surface((800, 600))
