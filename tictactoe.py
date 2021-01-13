@@ -7,9 +7,9 @@ BOARD = [[], [], [],
 
 class TicTacToe:
     """
-
+    Creates a game of Quantum Tic-Tac-Toe
     """
-    board: List[Optional[str, List[str]]]
+    # board: List[Optional[str, List[str]]]
     X: str
     Y: str
     subscript: int
@@ -69,14 +69,25 @@ class TicTacToe:
         :return:
         """
 
-    def place_piece(self, row, col):
-        if 0 <= row < 3 and 0 <= col < 3:
-            if type(self.board[row][col]) != str:
-                self.board[row][col].append(self.whose_turn() + str(self.subscript))
-                self.subscript += 1
+    def place_piece(self, position):
+        """
+        Places down a mark on the grid
+        :param position: The position the player wants to place a mark in the grid.
+        :return:
+        """
+        if 0 <= position < 8:
+            if type(self.board[position]) != str:
+                self.board[position].append(self.whose_turn() + str(self.subscript))
                 self.mark_counter += 1
+                if self.mark_counter == 2:
+                    self.mark_counter = 0
+                    self.subscript += 1
+                return True
+        return False
 
     def reset(self):
         self.board = BOARD
         self.subscript = 1
         self.mark_counter = 0
+        self.subscript += 1
+        self.mark_counter += 1
