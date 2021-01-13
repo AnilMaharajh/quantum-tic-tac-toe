@@ -1,13 +1,16 @@
 # Inspired from Tutorials Point:
 # https://www.tutorialspoint.com/python-program-for-detect-cycle-in-a-directed-graph
 
-from typing import Tuple,Set,List
+from typing import Tuple, Set, List
+
 '''
 Graph keeps track of all the edges that 
 are present in the graph and checks the presence of 
 a cycle in the graph.
 
 '''
+
+
 class Graph():
     def __init__(self):
         self.visited = []
@@ -24,7 +27,7 @@ class Graph():
         if tuple not in self.edges:
             self.edges.append(coord)
 
-    def addVisited(self, coord:tuple):
+    def addVisited(self, coord: tuple):
         '''
         Adds coord to the list of visited
         edges.
@@ -87,10 +90,11 @@ class Graph():
             self.clearVisited()
         return False
 
+
 if __name__ == "__main__":
     g = Graph()
-    g.addEdge((1,5))
-    g.addEdge((2,4))
-    g.addEdge((2,5))
-    g.addEdge((4,1))
+    g.addEdge((1, 5))
+    g.addEdge((2, 4))
+    g.addEdge((2, 5))
+    g.addEdge((4, 1))
     print(g.cyclicEntanglement())
