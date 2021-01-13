@@ -1,6 +1,3 @@
-# Inspired from :
-#https://www.geeksforgeeks.org/detect-cycle-undirected-graph/
-
 from typing import Tuple, Set, List
 
 '''
