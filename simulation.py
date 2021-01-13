@@ -18,18 +18,40 @@ GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 
 
-def entangle_move(x, y, char):
+def entangle_move(x, y, char: str):
     """Clears a section of the grid and replaces it with char"""
     for index in range(len(KEY_COOR)):
         bool1 = KEY_COOR[index][0] <= x < KEY_COOR[index][2] + KEY_COOR[index][0]
         bool2 = KEY_COOR[index][1] <= y < KEY_COOR[index][3] + KEY_COOR[index][1]
-        if bool1 and bool2:
+        if bool1 and bool2 and char.lower() == "x":
             pygame.draw.rect(
                 window_surface,
                 WHITE,
                 KEY_COOR[index]
             )
-            return None
+            font1 = pygame.font.Font('freesansbold.ttf', 120)
+            text1 = font1.render('X', True, BLACK, WHITE)
+            text_rect = text1.get_rect()
+            text_rect.center = (
+                KEY_COOR[index][0] + KEY_COOR[index][2],
+                KEY_COOR[index][1] + KEY_COOR[index][3]
+            )
+            window_surface.blit(text1, text_rect)
+        elif bool1 and bool2 and char.lower() == "o":
+            pygame.draw.rect(
+                window_surface,
+                WHITE,
+                KEY_COOR[index]
+            )
+            font1 = pygame.font.Font('freesansbold.ttf', 120)
+            text1 = font1.render('O', True, BLACK, WHITE)
+            text_rect = text1.get_rect()
+            text_rect.center = (
+                KEY_COOR[index][0] + KEY_COOR[index][2]/2,
+                KEY_COOR[index][1] + KEY_COOR[index][3]/2
+            )
+            window_surface.blit(text1, text_rect)
+
 
 
 def create_grid():
@@ -87,7 +109,7 @@ window_surface.fill(WHITE)
 # clock = pygame.time.Clock()
 is_running = True
 start = False
-entangle = False
+entangle = True
 
 while is_running:
     if not start:
@@ -106,7 +128,9 @@ while is_running:
                 pass
 
             elif start and entangle:
-                entangle_move(event.pos[0], event.pos[1], 3)
+                # Right now the third parameter is "O", but it can be whatever
+                # you like later
+                entangle_move(event.pos[0], event.pos[1], "O")
 
         # if event.type == pygame.USEREVENT:
         #     if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
