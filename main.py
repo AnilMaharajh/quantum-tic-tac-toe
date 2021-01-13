@@ -3,45 +3,67 @@ import pygame
 import tictactoe
 
 FONT_SIZE = 30
-WIDTH = 800
-HEIGHT = 600
+WIDTH = 1350
+HEIGHT = 800
+GAME_WIDTH = WIDTH * 2 // 3
+GAME_HEIGHT = HEIGHT * 3 // 4
+KEY_COOR = []
+for i in range(225, 1125, 300):
+    for j in range(100, 700, 200):
+        KEY_COOR.append((i + 2.5, j + 2.5, 297.5, 197.5))
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 
+
+def entangle_move(x, y, char):
+    """Clears a section of the grid and replaces it with char"""
+    for index in range(len(KEY_COOR)):
+        bool1 = KEY_COOR[index][0] <= x < KEY_COOR[index][2] + KEY_COOR[index][0]
+        bool2 = KEY_COOR[index][1] <= y < KEY_COOR[index][3] + KEY_COOR[index][1]
+        if bool1 and bool2:
+            pygame.draw.rect(
+                window_surface,
+                WHITE,
+                KEY_COOR[index]
+            )
+            return None
+
+
 def create_grid():
+    """Creates the grid for Tic-Tac-Toe"""
     window_surface.fill(WHITE)
-    for i in range(9):
+    for i in range(10):
         if i % 3 == 0:
             pygame.draw.line(
                 window_surface,
                 BLACK,
-                (i * WIDTH/9, 0.0),
-                (i * WIDTH/9, HEIGHT),
+                (i * GAME_WIDTH/9 + 225, 100.0),
+                (i * GAME_WIDTH/9 + 225, GAME_HEIGHT + 100),
                 5
             )
             pygame.draw.line(
                 window_surface,
                 BLACK,
-                (0.0, i * HEIGHT/9),
-                (WIDTH, i * HEIGHT/9),
+                (225.0, i * GAME_HEIGHT/9 + 100),
+                (225 + GAME_WIDTH, i * GAME_HEIGHT/9 + 100),
                 5
             )
         else:
             pygame.draw.line(
                 window_surface,
                 BLACK,
-                (i * WIDTH/9, 0.0),
-                (i * WIDTH/9, HEIGHT),
+                (i * GAME_WIDTH/9 + 225, 100.0),
+                (i * GAME_WIDTH/9 + 225, GAME_HEIGHT + 100),
                 3
             )
             pygame.draw.line(
                 window_surface,
                 BLACK,
-                (0.0, i * HEIGHT/9),
-                (WIDTH, i * HEIGHT/9),
+                (225.0, i * GAME_HEIGHT/9 + 100),
+                (225 + GAME_WIDTH, i * GAME_HEIGHT/9 + 100),
                 3
             )
 
@@ -65,6 +87,7 @@ window_surface.fill(WHITE)
 # clock = pygame.time.Clock()
 is_running = True
 start = False
+entangle = True
 
 while is_running:
     if not start:
@@ -78,8 +101,12 @@ while is_running:
             if not start:
                 start = True
                 create_grid()
-            else:
+
+            elif start and not entangle:
                 pass
+
+            elif start and entangle:
+                entangle_move(event.pos[0], event.pos[1], 3)
 
         # if event.type == pygame.USEREVENT:
         #     if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
