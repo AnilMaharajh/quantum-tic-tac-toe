@@ -1,4 +1,4 @@
-#This takes inspiration from the idea demonstrated in https://www.geeksforgeeks.org/detect-cycle-undirected-graph/
+# Uses a depth-first search approach through a stack implementation to find cycle in a graph
 
 from typing import Tuple, List
 
