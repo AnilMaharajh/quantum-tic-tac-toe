@@ -48,9 +48,9 @@ def place_marker(x, y, game: TicTacToe):
                     KEY_COOR_SMALL[index][1] + KEY_COOR_SMALL[index][3] / 2
                 )
                 window_surface.blit(text1, text_rect)
-                entangle = game.entangle()
-                if entangle != []:
-                    game.collapse(entangle)
+                # entangle = game.entangle()
+                # if entangle != []:
+                #     game.collapse(entangle)
 
 
 def get_position(x: int, y: int):
@@ -155,6 +155,8 @@ pygame.init()
 pygame.display.set_caption('Quantum Tic-Tac-Toe')
 window_surface = pygame.display.set_mode((WIDTH, HEIGHT))
 
+image = pygame.image.load('player_image_1.jpeg')
+
 font = pygame.font.Font('freesansbold.ttf', 21)
 text = font.render('DO YOU WANT TO PLAY A BETTER TIC-TAC-TOE? CLICK ANYWHERE IF YES', True, GREEN, RED)
 
@@ -174,6 +176,8 @@ game = TicTacToe()
 while is_running:
     if not start:
         window_surface.blit(text, text.get_rect())
+    if start:
+        window_surface.blit(image, (0, 0))
     # time_delta = clock.tick(60) / 1000.0
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -188,6 +192,10 @@ while is_running:
                 # Right now the third parameter is "X", but it can be whatever
                 # you like later, same with the fourth parameter
                 place_marker(event.pos[0], event.pos[1], game)
+                entangler = game.entangle()
+                if entangler:
+                    game.collapse(entangler)
+                    entangle = not not entangler
 
             elif start and entangle:
                 # Right now the third parameter is "O", but it can be whatever
