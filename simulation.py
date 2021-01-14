@@ -157,6 +157,7 @@ pygame.display.set_caption('Quantum Tic-Tac-Toe')
 window_surface = pygame.display.set_mode((WIDTH, HEIGHT))
 
 image = pygame.image.load('player_image_1.jpeg')
+image2 = pygame.image.load('image.jpg')
 
 font = pygame.font.Font('freesansbold.ttf', 21)
 text = font.render('DO YOU WANT TO PLAY A BETTER TIC-TAC-TOE? CLICK ANYWHERE IF YES', True, GREEN, RED)
@@ -179,6 +180,7 @@ while is_running:
         window_surface.blit(text, text.get_rect())
     if start:
         window_surface.blit(image, (0, 0))
+        window_surface.blit(image2, (1145, 0))
     # time_delta = clock.tick(60) / 1000.0
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
