@@ -69,21 +69,26 @@ class TicTacToe:
         :return:
         """
 
+    def collapse(self, edges):
+        pass
+
     def place_piece(self, position):
         """
         Places down a mark on the grid
         :param position: The position the player wants to place a mark in the grid.
         :return:
         """
-        if 0 <= position < 8:
+        mark = self.whose_turn() + str(self.subscript)
+        if 0 <= position <= 8 and mark not in self.board[position]:
             if type(self.board[position]) != str:
-                self.board[position].append(self.whose_turn() + str(self.subscript))
+                self.board[position].append(mark)
                 self.mark_counter += 1
                 if self.mark_counter == 2:
                     self.mark_counter = 0
                     self.subscript += 1
-                return True
-        return False
+                print(self.board)
+                return mark
+        return "F"
 
     def reset(self):
         self.board = BOARD
