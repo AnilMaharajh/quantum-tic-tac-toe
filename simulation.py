@@ -36,6 +36,7 @@ def place_marker(x, y, game: TicTacToe):
         bool1 = KEY_COOR_SMALL[index][0] <= x < KEY_COOR_SMALL[index][2] + KEY_COOR_SMALL[index][0]
         bool2 = KEY_COOR_SMALL[index][1] <= y < KEY_COOR_SMALL[index][3] + KEY_COOR_SMALL[index][1]
         if bool1 and bool2:
+            print(x, y)
             # Can replace the mark on the board, but game.board will not be overidden
             position = get_position(x, y)
             mark = game.place_piece(position)
@@ -71,11 +72,11 @@ def get_position(x: int, y: int):
         return 4
     elif 525 < x < 795 and 500 < y < 700:
         return 7
-    elif 795 < x < 1065 and 100 < y < 300:
+    elif 795 < x < 1120 and 100 < y < 300:
         return 2
-    elif 795 < x < 1065 and 300 < y < 500:
+    elif 795 < x < 1120 and 300 < y < 500:
         return 5
-    elif 795 < x < 1065 and 500 < y < 700:
+    elif 795 < x < 1120 and 500 < y < 700:
         return 8
 
 
