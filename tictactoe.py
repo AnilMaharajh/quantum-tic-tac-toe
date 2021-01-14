@@ -24,6 +24,7 @@ class TicTacToe:
         self.board = BOARD
         self.X = "X"
         self.Y = "Y"
+        self.graph = Graph()
         self.subscript = 1
         self.mark_pos = []
         self.mark_counter = 0
