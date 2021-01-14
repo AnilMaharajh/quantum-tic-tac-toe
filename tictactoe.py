@@ -1,4 +1,5 @@
 from typing import List, Optional
+from Graph import Graph
 
 BOARD = [[], [], [],
          [], [], [],
@@ -13,15 +14,18 @@ class TicTacToe:
     X: str
     Y: str
     subscript: int
+    mark_pos: List[int]
     mark_counter: int
     x_wins: int
     y_wins: int
+    graph: Graph
 
     def __init__(self):
         self.board = BOARD
         self.X = "X"
         self.Y = "Y"
         self.subscript = 1
+        self.mark_pos = []
         self.mark_counter = 0
         self.x_wins = 0
         self.y_wins = 0
@@ -82,10 +86,12 @@ class TicTacToe:
         if 0 <= position <= 8 and mark not in self.board[position]:
             if type(self.board[position]) != str:
                 self.board[position].append(mark)
+                self.mark_pos.append(position)
                 self.mark_counter += 1
                 if self.mark_counter == 2:
                     self.mark_counter = 0
                     self.subscript += 1
+                    self.graph.addEdge(self.mark_pos.pop(0), self.mark_pos.pop(0))
                 print(self.board)
                 return mark
         return "F"
