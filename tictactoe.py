@@ -12,32 +12,29 @@ class TicTacToe:
     """
     # board: List[Optional[str, List[str]]]
     X: str
-    Y: str
+    O: str
     subscript: int
     mark_pos: List[int]
     mark_counter: int
-    x_wins: int
-    y_wins: int
     graph: Graph
+    num_class_moves: int
 
     def __init__(self):
         self.board = BOARD
         self.X = "X"
-        self.Y = "Y"
+        self.O = "O"
         self.graph = Graph()
         self.subscript = 1
         self.mark_pos = []
         self.mark_counter = 0
-        self.x_wins = 0
-        self.y_wins = 0
 
     def whose_turn(self):
         """
         Checks whose turn it is by seeing if the subscript is even or odd
-        :return:  Y if subscript is even, otherwise return X
+        :return:  O if subscript is even, otherwise return X
         """
         if self.subscript % 2 == 0:
-            return self.Y
+            return self.O
         else:
             return self.X
 
@@ -46,27 +43,61 @@ class TicTacToe:
         Checks if there is a winning position by looking at the row and columns
         :return: the mark piece of either X or O if it satisfy a winning condition. Otherwise return None
         """
-        wins = {"X": 0, "Y": 0}
+        wins = {"X": 0, "O": 0}
+        marks = {"X": [], "O": []}
+        # Checks which subscript is the largest for a comparision, if the other player gets a classical win
         # Horizontals
-        if self.board[0][0] == self.board[1][0] == self.board[2][0]:
-            wins[self.board[0][0]] += 1
-        if self.board[3][0] == self.board[4][0] == self.board[5][0]:
-            wins[self.board[3][0]] += 1
-        if self.board[6][0] == self.board[7][0] == self.board[8][0]:
-            wins[self.board[6][0]] += 1
+        if self.checks_str(0, 1, 2) and self.board[0][0] == self.board[1][0] == self.board[2][0]:
+            marks[self.board[0][0]].append(max(self.board[0][1], self.board[1][1], self.board[2][1]))
+        if self.checks_str(3, 4, 5) and self.board[3][0] == self.board[4][0] == self.board[5][0]:
+            marks[self.board[3][0]].append(max(self.board[3][1], self.board[4][1], self.board[5][1]))
+        if self.checks_str(6, 7, 8) and self.board[6][0] == self.board[7][0] == self.board[8][0]:
+            marks[self.board[6][0]].append(max(self.board[6][1], self.board[7][1], self.board[8][1]))
         # Verticals
-        if self.board[0][0] == self.board[3][0] == self.board[6][0]:
-            wins[self.board[0][0]] += 1
-        if self.board[1][0] == self.board[4][0] == self.board[7][0]:
-            wins[self.board[1][0]] += 1
-        if self.board[2][0] == self.board[5][0] == self.board[8][0]:
-            wins[self.board[2][0]] += 1
+        if self.checks_str(0, 3, 6) and self.board[0][0] == self.board[3][0] == self.board[6][0]:
+            marks[self.board[0][0]].append(max(self.board[0][1], self.board[3][1], self.board[6][1]))
+        if self.checks_str(1, 4, 7) and self.board[1][0] == self.board[4][0] == self.board[7][0]:
+            marks[self.board[1][0]].append(max(self.board[1][1], self.board[4][1], self.board[7][1]))
+        if self.checks_str(2, 5, 8) and self.board[2][0] == self.board[5][0] == self.board[8][0]:
+            marks[self.board[2][0]].append(max(self.board[2][1], self.board[5][1], self.board[8][1]))
         # Diagonals
-        if self.board[0][0] == self.board[4][0] == self.board[8][0]:
-            wins[self.board[0][0]] += 1
-        if self.board[2][0] == self.board[4][0] == self.board[6][0]:
-            wins[self.board[2][0]] += 1
+        if self.checks_str(0, 4, 8) and self.board[0][0] == self.board[4][0] == self.board[8][0]:
+            marks[self.board[0][0]].append(max(self.board[0][1], self.board[4][1], self.board[8][1]))
+        if self.checks_str(2, 4, 6) and self.board[2][0] == self.board[4][0] == self.board[6][0]:
+            marks[self.board[2][0]].append(max(self.board[2][1], self.board[4][1], self.board[6][1]))
+
+        x = marks["X"]
+        o = marks["O"]
+        num_x = len(x)
+        num_o = len(o)
+        num_compare = len(x)
+        x.sort()
+        o.sort()
+
+        if num_x > num_o:
+            num_compare = num_x - num_o
+            wins["X"] += num_compare
+        elif num_x < num_o:
+            num_compare = num_o - num_x
+            wins["O"] += num_compare
+        for i in range(num_compare):
+            if x[i] < o[i]:
+                wins["X"] += 1
+                wins["O"] += 0.5
+            else:
+                wins["O"] += 1
+                wins["X"] += 0.5
+
         return wins
+
+    def checks_str(self, one: int, two: int, three: int):
+        """
+        Checks if all the positions are type str. If it is all str,
+        then return True otherwise return False
+        :return:
+        """
+        return type(self.board[one]) == str and type(self.board[two]) == str and \
+               type(self.board[three]) == str
 
     def entangle(self):
         """
