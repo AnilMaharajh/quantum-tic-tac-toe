@@ -111,7 +111,8 @@ class Graph():
                 found.append((edge, box))
         return found
 
-    def collapse(self, box: int):
+
+    def collapse(self, box: int, mark:str):
         """
          Collapses all the boxes related to the cyclic entanglement
         into classical tictactoe boxes
@@ -120,7 +121,14 @@ class Graph():
         :return: a dictionary mapping each box to a counter with subscripts
         """
         mapping = {}
-        queue = self.findEdge(box)
+        queue = []
+        edges = self.findEdge(box)
+        for edge in edges:
+            if edge[0][2] == mark:
+                mapping[box] = edge[0][2]
+            else:
+                queue.append(edge)
+
         while queue != []:
             current, pos = queue.pop(0)
             if current[0] in mapping:
@@ -137,13 +145,13 @@ class Graph():
         self.clearVisited()
         return mapping
 
-
-if __name__ == "__main__":
-    g = Graph()
-    g.addEdge(1, 0, "X1")
-    g.addEdge(1, 0, "X2")
-    g.addEdge(1, 2, "Y2")
-    g.addEdge(3, 4, "Y3")
-    # print(g.cyclicEntanglement())
-    # print(g.collapse(1))
-    # print(g.edges)
+#
+# if __name__ == "__main__":
+#     g = Graph()
+#     g.addEdge(1, 0, "X1")
+#     g.addEdge(1, 0, "X2")
+#     g.addEdge(1, 2, "Y2")
+#     g.addEdge(3, 4, "Y3")
+#     print(g.cyclicEntanglement())
+#     print(g.collapse(0,"X2"))
+#     print(g.edges)
