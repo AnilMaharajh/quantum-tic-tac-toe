@@ -29,8 +29,8 @@ SUP = str.maketrans("0123456789", "⁰¹²³⁴⁵⁶⁷⁸⁹")
 # 0 is omitted since it already corresponds to the first position on the game board
 INDEX_TO_BOARD_POSITION = {}
 VALID_MOVES = {0: True, 1: True, 2: True, 3: True, 4: True, 5: True, 6: True, 7: True, 8: True}
-COLLAPSE_MARK1 = []
-COLLAPSE_MARK2 = []
+COLLAPSE_MARK1 = ["X"]
+COLLAPSE_MARK2 = ["Y"]
 
 
 def place_marker(x, y, game: TicTacToe):
@@ -121,17 +121,17 @@ def entangle_move(x, y):
         COLLAPSE_MARK1.append(collapse_box[0])
         COLLAPSE_MARK2.append(collapse_box[0])
 
-        pygame.draw.rect(window_surface, BLACK, (360, 722))
-        font1 = pygame.font.Font('freesansbold.ttf', 120)
-        text1 = font1.render(COLLAPSE_MARK1[0], True, BLACK, WHITE)
-        text_rect = text1.get_rect()
-        window_surface.blit(text1, text_rect)
-
-        pygame.draw.rect(window_surface, BLACK, (500, 722))
-        font1 = pygame.font.Font('freesansbold.ttf', 120)
-        text1 = font1.render(COLLAPSE_MARK2[0], True, BLACK, WHITE)
-        text_rect = text1.get_rect()
-        window_surface.blit(text1, text_rect)
+        # pygame.draw.rect(window_surface, BLACK, (360, 722))
+        # font1 = pygame.font.Font('freesansbold.ttf', 120)
+        # text1 = font1.render(COLLAPSE_MARK1[0], True, BLACK, WHITE)
+        # text_rect = text1.get_rect()
+        # window_surface.blit(text1, text_rect)
+        #
+        # pygame.draw.rect(window_surface, BLACK, (500, 722))
+        # font1 = pygame.font.Font('freesansbold.ttf', 120)
+        # text1 = font1.render(COLLAPSE_MARK2[0], True, BLACK, WHITE)
+        # text_rect = text1.get_rect()
+        # window_surface.blit(text1, text_rect)
         print(game.board)
     else:
         print("Invalid move")
@@ -194,6 +194,24 @@ def create_grid():
                 (225 + GAME_WIDTH, i * GAME_HEIGHT / 9 + 100),
                 3
             )
+
+
+def choices():
+    """Puts up the choices of which token should be on the board"""
+    font_choice_1 = pygame.font.Font('freesansbold.ttf', 40)
+    font_choice_2 = pygame.font.Font('freesansbold.ttf', 40)
+
+    text_choice_1 = font_choice_1.render(f"{COLLAPSE_MARK1[0]}", True, BLACK, RED)
+    text_choice_2 = font_choice_2.render(f"{COLLAPSE_MARK2[0]}", True, WHITE, BLUE)
+
+    text_choice_1_rect = text_choice_1.get_rect()
+    text_choice_2_rect = text_choice_2.get_rect()
+
+    text_choice_1_rect.center = (225 + 300, 100 + 603 + 40)
+    text_choice_2_rect.center = (225 + 600, 100 + 603 + 40)
+
+    window_surface.blit(text_choice_1, text_choice_1_rect)
+    window_surface.blit(text_choice_2, text_choice_2_rect)
 
 
 pygame.init()
@@ -268,6 +286,7 @@ while is_running:
             elif start and entangle:
                 # Right now the third parameter is "O", but it can be whatever
                 # you like later
+                choices()
                 entangle_move(event.pos[0], event.pos[1])
 
     pygame.display.update()
