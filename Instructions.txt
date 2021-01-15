@@ -1,0 +1,13 @@
+HOW TO PLAY QUANTUM TIC-TAC-TOE:
+
+There are 2 players, X and O.
+Each player takes 2 turns placing tokens on the board.
+The board is a regular tic-tac-toe, in which each square has a 3 by 3 board within
+X goes first and places a token in one of the 81 squares
+Then put’s another token in any other square except for the same large square
+After X places two tokens, it’s O’s turn and O does the same
+When you place you’re first token, it will be labelled as a subscript (X1, O2…)
+When you link all these tokens together and come back to the original large square, you have formed an entanglement
+When there is an entanglement, the player that didn’t form the entanglement chooses
+which square they want to be rightfully theirs (Labelling the large square as their token)
+The game continues until one of the players achieves a tic-tac

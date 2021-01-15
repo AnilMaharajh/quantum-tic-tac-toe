@@ -223,6 +223,27 @@ window_surface.fill(WHITE)
 
 font_score = pygame.font.Font('freesansbold.ttf', 20)
 
+
+INSTRUCTIONS = []
+INSTRUCTIONS_RECT = []
+file = open("Instructions.txt")
+a = file.readlines()
+acc = 100
+for line in a:
+    if line.strip() != "":
+        instruct = font.render(line.strip(), True, GREEN, RED)
+        INSTRUCTIONS.append(instruct)
+        rect = instruct.get_rect()
+        rect.center = (WIDTH/2, acc)
+        acc += 30
+        INSTRUCTIONS_RECT.append(rect)
+
+
+file.close()
+# text_instructions = font.render(INSTRUCTIONS, True, GREEN, RED)
+# text_instructions_rect = text_instructions.get_rect()
+# text_instructions_rect.center = (WIDTH/2, HEIGHT/2)
+
 is_running = True
 start = False
 entangle = False
@@ -234,6 +255,8 @@ score_p2 = 0
 while is_running:
     if not start:
         window_surface.blit(text, text.get_rect())
+        for i in range(len(INSTRUCTIONS)):
+            window_surface.blit(INSTRUCTIONS[i], INSTRUCTIONS_RECT[i])
     if start:
         window_surface.blit(image, (0, 0))
         window_surface.blit(image2, (1145, 0))
