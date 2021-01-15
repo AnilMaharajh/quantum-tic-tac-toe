@@ -135,8 +135,11 @@ class TicTacToe:
             self.board[key] = value
             self.boxes_filled += 1
         if self.boxes_filled == 8:
-            for self.board
-
+            for i in range(len(self.board)):
+                # Checks if its a list
+                if self.board[i]:
+                    mark = self.whose_turn() + str(self.subscript)
+                    self.board[i] = mark
 
     def place_piece(self, position):
         """
