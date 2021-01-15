@@ -113,7 +113,7 @@ class TicTacToe:
                 boxes.append(edge[1])
         return boxes
 
-    def collapse(self, box: int):
+    def collapse(self, box: int, mark: str):
         """
         Collapses all the boxes related to the cyclic entanglement
         into classical tictactoe boxes
@@ -121,7 +121,7 @@ class TicTacToe:
         :param box: which box was chosen by player to start collapse
         :return: a dictionary mapping each box to a counter with subscripts
         """
-        return self.graph.collapse(box)
+        return self.graph.collapse(box, mark)
 
     def place_classical(self, box: Dict):
         """
@@ -144,7 +144,7 @@ class TicTacToe:
                 self.mark_pos.append(position)
                 self.mark_counter += 1
                 if self.mark_counter == 2:
-                    self.graph.addEdge(self.mark_pos.pop(0), self.mark_pos.pop(0), str(self.subscript))
+                    self.graph.addEdge(self.mark_pos.pop(0), self.mark_pos.pop(0), mark)
                     self.mark_counter = 0
                     self.subscript += 1
                 return mark
