@@ -162,7 +162,10 @@ image2 = pygame.image.load('image.jpg')
 font = pygame.font.Font('freesansbold.ttf', 21)
 text = font.render('DO YOU WANT TO PLAY A BETTER TIC-TAC-TOE? CLICK ANYWHERE IF YES', True, GREEN, RED)
 
+font_title = pygame.font.Font('freesansbold.ttf', 40)
 window_surface.fill(WHITE)
+
+font_score = pygame.font.Font('freesansbold.ttf', 20)
 
 # manager = pygame_gui.UIManager((800, 600))
 
@@ -174,6 +177,8 @@ is_running = True
 start = False
 entangle = False
 game = TicTacToe()
+score_p1 = 0
+score_p2 = 0
 
 while is_running:
     if not start:
@@ -181,6 +186,31 @@ while is_running:
     if start:
         window_surface.blit(image, (0, 0))
         window_surface.blit(image2, (1145, 0))
+
+        text_title = font_title.render("QUANTUM TIC-TAC-TOE", True, GREEN, WHITE)
+        text_score_1 = font_score.render("PLAYER 1 SCORE", True, RED, WHITE)
+        text_score_2 = font_score.render("PLAYER 2 SCORE", True, BLUE, WHITE)
+        score_1 = font_score.render(f"{score_p1}", True, RED, WHITE)
+        score_2 = font_score.render(f"{score_p2}", True, BLUE, WHITE)
+
+        title_rect = text_title.get_rect()
+        text_score_1_rect = text_score_1.get_rect()
+        text_score_2_rect = text_score_2.get_rect()
+        score_1_rect = score_1.get_rect()
+        score_2_rect = score_2.get_rect()
+
+        title_rect.center = (WIDTH/2, 50)
+        text_score_1_rect.center = (205/2, 246 + 30)
+        text_score_2_rect.center = (WIDTH - 205/2, 246 + 30)
+        score_1_rect.center = (205/2, 246 + 60)
+        score_2_rect.center = (WIDTH - 205/2, 246 + 60)
+
+        window_surface.blit(text_title, title_rect)
+        window_surface.blit(text_score_1, text_score_1_rect)
+        window_surface.blit(text_score_2, text_score_2_rect)
+        window_surface.blit(score_1, score_1_rect)
+        window_surface.blit(score_2, score_2_rect)
+
     # time_delta = clock.tick(60) / 1000.0
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
