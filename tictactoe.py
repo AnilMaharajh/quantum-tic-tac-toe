@@ -100,13 +100,31 @@ class TicTacToe:
                type(self.board[three]) == str
 
     def entangle(self):
-        """
+        '''
+        Returns a list of boxes that are eligible for collapse
+        iff there is a cyclic entanglement. Otherwise returns
+        an empty list.
 
-        :return:
-        """
+        :return: list boxes involved in cyclic entanglement eligible for collapse
+        '''
+        cycle = self.graph.cyclicEntanglement()
+        boxes = []
+        for edge in cycle:
+            if edge[0] not in cycle:
+                boxes.append(edge[0])
+            if edge[1] not in cycle:
+                boxes.append(edge[1])
+        return boxes
 
-    def collapse(self, edges):
-        pass
+    def collapse(self, box: int):
+        '''
+        Collapses all the boxes related to the cyclic entanglement
+        into classical tictactoe boxes
+
+        :param box: which box was chosen by player to start collapse
+        :return: a dictionary mapping each box to a counter with subscripts
+        '''
+        return self.graph.collapse(box)
 
     def place_piece(self, position):
         """
