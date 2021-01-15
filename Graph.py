@@ -14,7 +14,7 @@ class Graph():
         self.visited = []
         self.edges = []
 
-    def addEdge(self, x: int, y:int):
+    def addEdge(self, x: int, y:int, counter:str):
         '''
         Adds coord to the list of edges
         present in the Graph. Each edge will always
@@ -24,9 +24,9 @@ class Graph():
         :return:
         '''
         if x > y:
-            self.edges.append((y,x))
+            self.edges.append((y,x,counter))
         else:
-            self.edges.append((x,y))
+            self.edges.append((x,y,counter))
 
     def addVisited(self, coord: tuple):
         '''
@@ -60,7 +60,7 @@ class Graph():
         '''
         neighbors = []
         self.addVisited(major)
-        v1,v2 = major
+        v1,v2,counter = major
         for edge in self.edges:
             if edge not in self.visited:
                 if v1 == edge[0] or v2 == edge[0]:
@@ -93,16 +93,55 @@ class Graph():
                     if len(more_neighbors) == 0:
                         points = [coord]
             if found:
+                self.clearVisited()
                 return points
             self.clearVisited()
         return []
 
-    def removeDuplicates(self):
-        temp = []
-        for edge in self.edges:
-            if edge in temp:
-                pass
-            else:
-                temp.append(edge)
-        self.edges = temp
+    def findEdge(self,box:int):
 
+        found = []
+        for edge in self.edges:
+            if edge[1] == box and edge not in self.visited:
+                self.visited.append(edge)
+                found.append((edge,box))
+            elif edge[0] == box and edge not in self.visited:
+                self.visited.append(edge)
+                found.append((edge,box))
+        return found
+
+    def collapse(self,box: int):
+        '''
+         Collapses all the boxes related to the cyclic entanglement
+        into classical tictactoe boxes
+
+        :param box: which box was chosen by player to start collapse
+        :return: a dictionary mapping each box to a counter with subscripts
+        '''
+        mapping = {}
+        queue = self.findEdge(box)
+        while queue != []:
+            current, pos = queue.pop(0)
+            if current[0] in mapping:
+                mapping[current[1]] = current[2]
+                queue.extend(self.findEdge(current[1]))
+            else:
+                mapping[current[0]] = current[2]
+                queue.extend(self.findEdge(current[0]))
+
+        # Remove the collapsed edges from the graph
+        for edge in self.visited:
+            self.edges.remove(edge)
+        #Clear the visited edges
+        self.clearVisited()
+        return mapping
+
+if __name__ == "__main__":
+    g = Graph()
+    g.addEdge(1,0,"X1")
+    g.addEdge(1,0,"X2")
+    g.addEdge(1,2,"Y2")
+    g.addEdge(3,4,"Y3")
+    print(g.cyclicEntanglement())
+    print(g.collapse(1))
+    print(g.edges)
