@@ -18,6 +18,7 @@ class TicTacToe:
     mark_counter: int
     graph: Graph
     num_class_moves: int
+    boxes_filled: int
 
     def __init__(self):
         self.board = BOARD
@@ -27,6 +28,7 @@ class TicTacToe:
         self.subscript = 1
         self.mark_pos = []
         self.mark_counter = 0
+        self.boxes_filled = 0
 
     def whose_turn(self):
         """
@@ -107,9 +109,9 @@ class TicTacToe:
         cycle = self.graph.cyclicEntanglement()
         boxes = []
         for edge in cycle:
-            if edge[0] not in cycle:
+            if edge[0] not in boxes:
                 boxes.append(edge[0])
-            if edge[1] not in cycle:
+            if edge[1] not in boxes:
                 boxes.append(edge[1])
         return boxes
 
@@ -118,6 +120,7 @@ class TicTacToe:
         Collapses all the boxes related to the cyclic entanglement
         into classical tictactoe boxes
 
+        :param mark:
         :param box: which box was chosen by player to start collapse
         :return: a dictionary mapping each box to a counter with subscripts
         """
@@ -130,6 +133,13 @@ class TicTacToe:
         """
         for key, value in box.items():
             self.board[key] = value
+            self.boxes_filled += 1
+        if self.boxes_filled == 8:
+            for i in range(len(self.board)):
+                # Checks if its a list
+                if self.board[i]:
+                    mark = self.whose_turn() + str(self.subscript)
+                    self.board[i] = mark
 
     def place_piece(self, position):
         """

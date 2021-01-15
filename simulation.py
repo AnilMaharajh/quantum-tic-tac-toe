@@ -1,5 +1,4 @@
 import pygame
-# import pygame_gui
 from tictactoe import TicTacToe
 
 FONT_SIZE = 30
@@ -22,13 +21,15 @@ WHITE = (255, 255, 255)
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
-SUB = str.maketrans("0123456789", "₀₁₂₃₄₅₆₇₈₉")
-SUP = str.maketrans("0123456789", "⁰¹²³⁴⁵⁶⁷⁸⁹")
 # 0 is omitted since it already corresponds to the first position on the game board
 INDEX_TO_BOARD_POSITION = {}
 VALID_MOVES = {0: True, 1: True, 2: True, 3: True, 4: True, 5: True, 6: True, 7: True, 8: True}
-COLLAPSE_MARK1 = ""
-COLLAPSE_MARK2 = ""
+# Allows variables to be mutated in functions
+CHOSEN_BOX = []
+COLLAPSE_MARK1 = []
+COLLAPSE_MARK2 = []
+# pygame grid number goes down instead of across like in tictactoe.py
+CONVERT_POS = {0: 0, 1: 3, 2: 6, 3: 1, 4: 4, 5: 7, 6: 2, 7: 5, 8: 8}
 
 
 def place_marker(x, y, game: TicTacToe):
@@ -42,8 +43,9 @@ def place_marker(x, y, game: TicTacToe):
             position = get_position(x, y)
             mark = game.place_piece(position)
             if mark != "F":
+                print(mark)
                 font1 = pygame.font.Font('freesansbold.ttf', 32)
-                text1 = font1.render(f'{mark[0]}{mark[1]}'.translate(SUB), True, BLACK, WHITE)
+                text1 = font1.render(f'{mark}', True, BLACK, WHITE)
                 text_rect = text1.get_rect()
                 text_rect.center = (
                     KEY_COOR_SMALL[index][0] + KEY_COOR_SMALL[index][2] / 2,
@@ -63,17 +65,18 @@ def entangled_boxes(entangle):
     Puts a blue outline around boxes that can collapse
     :param entangle: A list that contains all the positions that are entangled
     """
-    # pygame grid number goes down instead of across like in tictactoe.py
-    convert_pos = {0: 0, 1: 3, 2: 6, 3: 2, 4: 4, 5: 7, 6: 7, 7: 5, 8: 8}
+
+    CONVERT_POS = {0: 0, 1: 3, 2: 6, 3: 1, 4: 4, 5: 7, 6: 2, 7: 5, 8: 8}
     # Changes all the valid moves to False
     for key in VALID_MOVES.keys():
         VALID_MOVES[key] = False
+    print(entangle)
     for box in entangle:
         VALID_MOVES[box] = True
         pygame.draw.rect(
             window_surface,
             BLUE,
-            KEY_COOR[convert_pos[box]], 3
+            KEY_COOR[CONVERT_POS[box]], 3
         )
 
 
@@ -83,6 +86,7 @@ def get_position(x: int, y: int):
     returns the position where the click corresponds to the board
     :return: an integer from 0-8 corresponding to a board position
     """
+    print(x, y)
     if 255 < x < 525 and 100 < y < 300:
         return 0
     elif 255 < x < 525 and 300 < y < 500:
@@ -101,44 +105,50 @@ def get_position(x: int, y: int):
         return 5
     elif 795 < x < 1120 and 500 < y < 700:
         return 8
+    elif 500 <= x <= 725 and 730 <= y <= 955:
+        return COLLAPSE_MARK1[0]
+    elif 825 <= x <= 855 and 730 <= y <= 955:
+        return COLLAPSE_MARK2[0]
     else:
         return 9
 
 
 def entangle_move(x, y):
-    """If a player clicks on a valid square, 2  marks will be
+    """If a player clicks on a valid square, 2 marks will be
     displayed for the user to choose for a collapse
     """
     index = get_position(x, y)
-    print(index)
     if VALID_MOVES[index]:
-        collapse_box = game.collapse(index)
-        game.place_classical(collapse_box)
-        collapse(collapse_box)
-        print(game.board)
+        COLLAPSE_MARK1.append(game.board[index][0])
+        COLLAPSE_MARK2.append(game.board[index][-1])
+        CHOSEN_BOX.append(index)
     else:
         print("Invalid move")
 
 
-def collapse(box):
+def collapse(box, mark):
     """
     Changes the boxes in grid into classical moves
     :param box:
     :return:
     """
-    for key, value in game.collapse(box):
+    coll = game.collapse(box, mark)
+    coll[box] = mark
+    print(coll)
+    for key, value in coll.items():
         if VALID_MOVES[key]:
+            game.place_classical(coll)
             pygame.draw.rect(
                 window_surface,
                 BLACK,
-                KEY_COOR[key]
+                KEY_COOR[CONVERT_POS[key]]
             )
             font1 = pygame.font.Font('freesansbold.ttf', 120)
-            text1 = font1.render(value, True, BLACK, WHITE)
+            text1 = font1.render(f"{value}", True, BLACK, WHITE)
             text_rect = text1.get_rect()
             text_rect.center = (
-                KEY_COOR[key][0] + KEY_COOR[key][2] / 2,
-                KEY_COOR[key][1] + KEY_COOR[key][3] / 2
+                KEY_COOR[CONVERT_POS[key]][0] + KEY_COOR[CONVERT_POS[key]][2] / 2,
+                KEY_COOR[CONVERT_POS[key]][1] + KEY_COOR[CONVERT_POS[key]][3] / 2
             )
             window_surface.blit(text1, text_rect)
 
@@ -179,6 +189,24 @@ def create_grid():
             )
 
 
+def choices():
+    """Puts up the choices of which token should be on the board"""
+    font_choice_1 = pygame.font.Font('freesansbold.ttf', 40)
+    font_choice_2 = pygame.font.Font('freesansbold.ttf', 40)
+
+    text_choice_1 = font_choice_1.render(f"{COLLAPSE_MARK1[0]}", True, BLACK, RED)
+    text_choice_2 = font_choice_2.render(f"{COLLAPSE_MARK2[0]}", True, WHITE, BLUE)
+
+    text_choice_1_rect = text_choice_1.get_rect()
+    text_choice_2_rect = text_choice_2.get_rect()
+
+    text_choice_1_rect.center = (225 + 300, 100 + 603 + 40)
+    text_choice_2_rect.center = (225 + 600, 100 + 603 + 40)
+
+    window_surface.blit(text_choice_1, text_choice_1_rect)
+    window_surface.blit(text_choice_2, text_choice_2_rect)
+
+
 pygame.init()
 
 pygame.display.set_caption('Quantum Tic-Tac-Toe')
@@ -198,6 +226,7 @@ font_score = pygame.font.Font('freesansbold.ttf', 20)
 is_running = True
 start = False
 entangle = False
+colpse = False
 game = TicTacToe()
 score_p1 = 0
 score_p2 = 0
@@ -239,18 +268,47 @@ while is_running:
             is_running = False
 
         if event.type == pygame.MOUSEBUTTONUP:
+            x = event.pos[0]
+            y = event.pos[1]
+            position = get_position(x, y)
             if not start:
                 start = True
                 create_grid()
 
             elif start and not entangle:
-                # Right now the third parameter is "X", but it can be whatever
-                # you like later, same with the fourth parameter
-                entangle = place_marker(event.pos[0], event.pos[1], game)
+                entangle = place_marker(x, y, game)
+                print(entangle)
 
-            elif start and entangle:
-                # Right now the third parameter is "O", but it can be whatever
-                # you like later
+            elif start and entangle and type(position) == int:
+                print("entangle happens")
                 entangle_move(event.pos[0], event.pos[1])
+                choices()
+                colpse = True
+
+            elif start and colpse and type(position) == str:
+                print("ay o collapse")
+                collapse(CHOSEN_BOX[0], position)
+                winners = game.check_winner()
+                if winners["X"] > 0 or winners["O"] > 0:
+                    print("Winner")
+                    break
+                entangle = False
+                colpse = False
+                CHOSEN_BOX.pop()
+                COLLAPSE_MARK1.pop()
+                COLLAPSE_MARK2.pop()
+                for i in range(len(game.board)):
+                    # If a box was entangled return it back to Black
+                    if VALID_MOVES[i]:
+                        pygame.draw.rect(
+                            window_surface,
+                            BLACK,
+                            KEY_COOR[CONVERT_POS[i]], 3
+                        )
+                    if type(game.board[i]) == str:
+                        VALID_MOVES[i] = False
+                    else:
+                        VALID_MOVES[i] = True
+                print(VALID_MOVES)
 
     pygame.display.update()

@@ -145,13 +145,13 @@ class Graph():
         self.clearVisited()
         return mapping
 
-#
-# if __name__ == "__main__":
-#     g = Graph()
-#     g.addEdge(1, 0, "X1")
-#     g.addEdge(1, 0, "X2")
-#     g.addEdge(1, 2, "Y2")
-#     g.addEdge(3, 4, "Y3")
-#     print(g.cyclicEntanglement())
-#     print(g.collapse(0,"X2"))
-#     print(g.edges)
+
+if __name__ == "__main__":
+    g = Graph()
+    g.addEdge(5, 0, "X1")
+    g.addEdge(8, 6, "O2")
+    g.addEdge(1, 2, "Y2")
+    g.addEdge(3, 4, "Y3")
+    print(g.cyclicEntanglement())
+    print(g.collapse(0,"X2"))
+    print(g.edges)
