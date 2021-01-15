@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Dict
 from Graph import Graph
 
 BOARD = [[], [], [],
@@ -66,11 +66,8 @@ class TicTacToe:
         if self.checks_str(2, 4, 6) and self.board[2][0] == self.board[4][0] == self.board[6][0]:
             marks[self.board[2][0]].append(max(self.board[2][1], self.board[4][1], self.board[6][1]))
 
-        x = marks["X"]
-        o = marks["O"]
-        num_x = len(x)
-        num_o = len(o)
-        num_compare = len(x)
+        x, o = marks["X"], marks["O"]
+        num_x, num_o, num_compare = len(x), len(o), len(x)
         x.sort()
         o.sort()
 
@@ -100,13 +97,13 @@ class TicTacToe:
                type(self.board[three]) == str
 
     def entangle(self):
-        '''
+        """
         Returns a list of boxes that are eligible for collapse
         iff there is a cyclic entanglement. Otherwise returns
         an empty list.
 
         :return: list boxes involved in cyclic entanglement eligible for collapse
-        '''
+        """
         cycle = self.graph.cyclicEntanglement()
         boxes = []
         for edge in cycle:
@@ -117,14 +114,22 @@ class TicTacToe:
         return boxes
 
     def collapse(self, box: int):
-        '''
+        """
         Collapses all the boxes related to the cyclic entanglement
         into classical tictactoe boxes
 
         :param box: which box was chosen by player to start collapse
         :return: a dictionary mapping each box to a counter with subscripts
-        '''
+        """
         return self.graph.collapse(box)
+
+    def place_classical(self, box: Dict):
+        """
+        Places classical pieces corresponding to a collapse
+        :param box: a dictionary mapping each box to a counter with subscripts
+        """
+        for key, value in box.items():
+            self.board[key] = value
 
     def place_piece(self, position):
         """
@@ -139,10 +144,9 @@ class TicTacToe:
                 self.mark_pos.append(position)
                 self.mark_counter += 1
                 if self.mark_counter == 2:
+                    self.graph.addEdge(self.mark_pos.pop(0), self.mark_pos.pop(0), str(self.subscript))
                     self.mark_counter = 0
                     self.subscript += 1
-                    self.graph.addEdge(self.mark_pos.pop(0), self.mark_pos.pop(0))
-                print(self.board)
                 return mark
         return "F"
 

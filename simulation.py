@@ -26,17 +26,18 @@ SUB = str.maketrans("0123456789", "₀₁₂₃₄₅₆₇₈₉")
 SUP = str.maketrans("0123456789", "⁰¹²³⁴⁵⁶⁷⁸⁹")
 # 0 is omitted since it already corresponds to the first position on the game board
 INDEX_TO_BOARD_POSITION = {}
+VALID_MOVES = {0: True, 1: True, 2: True, 3: True, 4: True, 5: True, 6: True, 7: True, 8: True}
+COLLAPSE_MARK1 = ""
+COLLAPSE_MARK2 = ""
 
 
 def place_marker(x, y, game: TicTacToe):
     """Given x, y coordinates, the player character and the subscript, places
     the marker on the quantum board"""
-    print(x, y, len(KEY_COOR_SMALL))
     for index in range(len(KEY_COOR_SMALL)):
         bool1 = KEY_COOR_SMALL[index][0] <= x < KEY_COOR_SMALL[index][2] + KEY_COOR_SMALL[index][0]
         bool2 = KEY_COOR_SMALL[index][1] <= y < KEY_COOR_SMALL[index][3] + KEY_COOR_SMALL[index][1]
         if bool1 and bool2:
-            print(x, y)
             # Can replace the mark on the board, but game.board will not be overidden
             position = get_position(x, y)
             mark = game.place_piece(position)
@@ -49,9 +50,31 @@ def place_marker(x, y, game: TicTacToe):
                     KEY_COOR_SMALL[index][1] + KEY_COOR_SMALL[index][3] / 2
                 )
                 window_surface.blit(text1, text_rect)
-                # entangle = game.entangle()
-                # if entangle != []:
-                #     game.collapse(entangle)
+                entangle_check = game.entangle()
+                if entangle_check:
+                    # Create an outline around the entangled boxes
+                    entangled_boxes(entangle_check)
+                    return True
+    return False
+
+
+def entangled_boxes(entangle):
+    """
+    Puts a blue outline around boxes that can collapse
+    :param entangle: A list that contains all the positions that are entangled
+    """
+    # pygame grid number goes down instead of across like in tictactoe.py
+    convert_pos = {0: 0, 1: 3, 2: 6, 3: 2, 4: 4, 5: 7, 6: 7, 7: 5, 8: 8}
+    # Changes all the valid moves to False
+    for key in VALID_MOVES.keys():
+        VALID_MOVES[key] = False
+    for box in entangle:
+        VALID_MOVES[box] = True
+        pygame.draw.rect(
+            window_surface,
+            BLUE,
+            KEY_COOR[convert_pos[box]], 3
+        )
 
 
 def get_position(x: int, y: int):
@@ -78,39 +101,44 @@ def get_position(x: int, y: int):
         return 5
     elif 795 < x < 1120 and 500 < y < 700:
         return 8
+    else:
+        return 9
 
 
-def entangle_move(x, y, char: str):
-    """Clears a section of the grid and replaces it with char"""
-    for index in range(len(KEY_COOR)):
-        bool1 = KEY_COOR[index][0] <= x < KEY_COOR[index][2] + KEY_COOR[index][0]
-        bool2 = KEY_COOR[index][1] <= y < KEY_COOR[index][3] + KEY_COOR[index][1]
-        if bool1 and bool2 and char.lower() == "x":
+def entangle_move(x, y):
+    """If a player clicks on a valid square, 2  marks will be
+    displayed for the user to choose for a collapse
+    """
+    index = get_position(x, y)
+    print(index)
+    if VALID_MOVES[index]:
+        collapse_box = game.collapse(index)
+        game.place_classical(collapse_box)
+        collapse(collapse_box)
+        print(game.board)
+    else:
+        print("Invalid move")
+
+
+def collapse(box):
+    """
+    Changes the boxes in grid into classical moves
+    :param box:
+    :return:
+    """
+    for key, value in game.collapse(box):
+        if VALID_MOVES[key]:
             pygame.draw.rect(
                 window_surface,
-                WHITE,
-                KEY_COOR[index]
+                BLACK,
+                KEY_COOR[key]
             )
             font1 = pygame.font.Font('freesansbold.ttf', 120)
-            text1 = font1.render('X', True, BLACK, WHITE)
+            text1 = font1.render(value, True, BLACK, WHITE)
             text_rect = text1.get_rect()
             text_rect.center = (
-                KEY_COOR[index][0] + KEY_COOR[index][2] / 2,
-                KEY_COOR[index][1] + KEY_COOR[index][3] / 2
-            )
-            window_surface.blit(text1, text_rect)
-        elif bool1 and bool2 and char.lower() == "o":
-            pygame.draw.rect(
-                window_surface,
-                WHITE,
-                KEY_COOR[index]
-            )
-            font1 = pygame.font.Font('freesansbold.ttf', 120)
-            text1 = font1.render('O', True, BLACK, WHITE)
-            text_rect = text1.get_rect()
-            text_rect.center = (
-                KEY_COOR[index][0] + KEY_COOR[index][2] / 2,
-                KEY_COOR[index][1] + KEY_COOR[index][3] / 2
+                KEY_COOR[key][0] + KEY_COOR[key][2] / 2,
+                KEY_COOR[key][1] + KEY_COOR[key][3] / 2
             )
             window_surface.blit(text1, text_rect)
 
@@ -167,12 +195,6 @@ window_surface.fill(WHITE)
 
 font_score = pygame.font.Font('freesansbold.ttf', 20)
 
-# manager = pygame_gui.UIManager((800, 600))
-
-# hello_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((350, 275), (100, 50)),
-#                                             text='Say Hello',
-#                                             manager=manager)
-# clock = pygame.time.Clock()
 is_running = True
 start = False
 entangle = False
@@ -188,8 +210,8 @@ while is_running:
         window_surface.blit(image2, (1145, 0))
 
         text_title = font_title.render("QUANTUM TIC-TAC-TOE", True, GREEN, WHITE)
-        text_score_1 = font_score.render("PLAYER 1 SCORE", True, RED, WHITE)
-        text_score_2 = font_score.render("PLAYER 2 SCORE", True, BLUE, WHITE)
+        text_score_1 = font_score.render("X SCORE", True, RED, WHITE)
+        text_score_2 = font_score.render("O SCORE", True, BLUE, WHITE)
         score_1 = font_score.render(f"{score_p1}", True, RED, WHITE)
         score_2 = font_score.render(f"{score_p2}", True, BLUE, WHITE)
 
@@ -199,11 +221,11 @@ while is_running:
         score_1_rect = score_1.get_rect()
         score_2_rect = score_2.get_rect()
 
-        title_rect.center = (WIDTH/2, 50)
-        text_score_1_rect.center = (205/2, 246 + 30)
-        text_score_2_rect.center = (WIDTH - 205/2, 246 + 30)
-        score_1_rect.center = (205/2, 246 + 60)
-        score_2_rect.center = (WIDTH - 205/2, 246 + 60)
+        title_rect.center = (WIDTH / 2, 50)
+        text_score_1_rect.center = (205 / 2, 246 + 30)
+        text_score_2_rect.center = (WIDTH - 205 / 2, 246 + 30)
+        score_1_rect.center = (205 / 2, 246 + 60)
+        score_2_rect.center = (WIDTH - 205 / 2, 246 + 60)
 
         window_surface.blit(text_title, title_rect)
         window_surface.blit(text_score_1, text_score_1_rect)
@@ -224,27 +246,11 @@ while is_running:
             elif start and not entangle:
                 # Right now the third parameter is "X", but it can be whatever
                 # you like later, same with the fourth parameter
-                place_marker(event.pos[0], event.pos[1], game)
-                entangler = game.entangle()
-                if entangler:
-                    game.collapse(entangler)
-                    entangle = not not entangler
+                entangle = place_marker(event.pos[0], event.pos[1], game)
 
             elif start and entangle:
                 # Right now the third parameter is "O", but it can be whatever
                 # you like later
-                entangle_move(event.pos[0], event.pos[1], "O")
-
-        # if event.type == pygame.USEREVENT:
-        #     if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
-        #         if event.ui_element == hello_button:
-        #             print('Hello World!')
-
-    #     manager.process_events(event)
-    #
-    # manager.update(time_delta)
-
-    # window_surface.blit(background, (0, 0))
-    # manager.draw_ui(window_surface)
+                entangle_move(event.pos[0], event.pos[1])
 
     pygame.display.update()
