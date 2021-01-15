@@ -1,6 +1,8 @@
 import pygame
 # import pygame_gui
 from tictactoe import TicTacToe
+from tkinter import *
+from tkinter import messagebox
 
 FONT_SIZE = 30
 WIDTH = 1350
@@ -27,13 +29,14 @@ SUP = str.maketrans("0123456789", "⁰¹²³⁴⁵⁶⁷⁸⁹")
 # 0 is omitted since it already corresponds to the first position on the game board
 INDEX_TO_BOARD_POSITION = {}
 VALID_MOVES = {0: True, 1: True, 2: True, 3: True, 4: True, 5: True, 6: True, 7: True, 8: True}
-COLLAPSE_MARK1 = ""
-COLLAPSE_MARK2 = ""
+COLLAPSE_MARK1 = []
+COLLAPSE_MARK2 = []
 
 
 def place_marker(x, y, game: TicTacToe):
     """Given x, y coordinates, the player character and the subscript, places
     the marker on the quantum board"""
+    print(x, y)
     for index in range(len(KEY_COOR_SMALL)):
         bool1 = KEY_COOR_SMALL[index][0] <= x < KEY_COOR_SMALL[index][2] + KEY_COOR_SMALL[index][0]
         bool2 = KEY_COOR_SMALL[index][1] <= y < KEY_COOR_SMALL[index][3] + KEY_COOR_SMALL[index][1]
@@ -112,21 +115,35 @@ def entangle_move(x, y):
     index = get_position(x, y)
     print(index)
     if VALID_MOVES[index]:
-        collapse_box = game.collapse(index)
+        collapse_box = game.collapse(index, game.board[index][0])
+        print(collapse_box)
         game.place_classical(collapse_box)
-        collapse(collapse_box)
+        COLLAPSE_MARK1.append(collapse_box[0])
+        COLLAPSE_MARK2.append(collapse_box[0])
+
+        pygame.draw.rect(window_surface, BLACK, (360, 722))
+        font1 = pygame.font.Font('freesansbold.ttf', 120)
+        text1 = font1.render(COLLAPSE_MARK1[0], True, BLACK, WHITE)
+        text_rect = text1.get_rect()
+        window_surface.blit(text1, text_rect)
+
+        pygame.draw.rect(window_surface, BLACK, (500, 722))
+        font1 = pygame.font.Font('freesansbold.ttf', 120)
+        text1 = font1.render(COLLAPSE_MARK2[0], True, BLACK, WHITE)
+        text_rect = text1.get_rect()
+        window_surface.blit(text1, text_rect)
         print(game.board)
     else:
         print("Invalid move")
 
 
-def collapse(box):
+def collapse(box, mark):
     """
     Changes the boxes in grid into classical moves
     :param box:
     :return:
     """
-    for key, value in game.collapse(box):
+    for key, value in game.collapse(box, mark):
         if VALID_MOVES[key]:
             pygame.draw.rect(
                 window_surface,
