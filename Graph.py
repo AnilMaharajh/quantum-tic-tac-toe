@@ -65,8 +65,10 @@ class Graph():
         for edge in self.edges:
             if edge not in self.visited:
                 if v1 == edge[0] or v2 == edge[0]:
+                    self.addVisited(edge)
                     neighbors.append((edge, 1))
                 elif v1 == edge[1] or v2 == edge[1]:
+                    self.addVisited(edge)
                     neighbors.append((edge, 0))
         return neighbors
 
@@ -148,10 +150,10 @@ class Graph():
 
 if __name__ == "__main__":
     g = Graph()
-    g.addEdge(5, 0, "X1")
+    g.addEdge(5, 9, "X1")
     g.addEdge(8, 6, "O2")
-    g.addEdge(1, 2, "Y2")
-    g.addEdge(3, 4, "Y3")
+    g.addEdge(5, 6, "X3")
+    g.addEdge(5, 6, "O4")
     print(g.cyclicEntanglement())
-    print(g.collapse(0,"X2"))
+    print(g.collapse(5,"O4"))
     print(g.edges)
