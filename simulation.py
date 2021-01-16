@@ -88,35 +88,36 @@ def get_position(x: int, y: int):
     returns the position where the click corresponds to the board
     :return: an integer from 0-8 corresponding to a board position
     """
-
-    print(x, y)
-    if 255 < x < 525 and 100 < y < 300:
-        return 0
-    elif 255 < x < 525 and 300 < y < 500:
-        return 3
-    elif 255 < x < 525 and 500 < y < 700:
-        return 6
-    elif 525 < x < 795 and 100 < y < 300:
-        return 1
-    elif 525 < x < 795 and 300 < y < 500:
-        return 4
-    elif 525 < x < 795 and 500 < y < 700:
-        return 7
-    elif 795 < x < 1120 and 100 < y < 300:
-        return 2
-    elif 795 < x < 1120 and 300 < y < 500:
-        return 5
-    elif 795 < x < 1120 and 500 < y < 700:
-        return 8
-    elif 500 <= x <= 725 and 730 <= y <= 955:
-        print(COLLAPSE_MARK1)
-        return COLLAPSE_MARK1[0]
-    elif 800 <= x <= 1055 and 730 <= y <= 955:
-        print(COLLAPSE_MARK2)
-        return COLLAPSE_MARK2[0]
-    else:
-        return 9
-
+    try:
+        print(x, y)
+        if 255 < x < 525 and 100 < y < 300:
+            return 0
+        elif 255 < x < 525 and 300 < y < 500:
+            return 3
+        elif 255 < x < 525 and 500 < y < 700:
+            return 6
+        elif 525 < x < 795 and 100 < y < 300:
+            return 1
+        elif 525 < x < 795 and 300 < y < 500:
+            return 4
+        elif 525 < x < 795 and 500 < y < 700:
+            return 7
+        elif 795 < x < 1120 and 100 < y < 300:
+            return 2
+        elif 795 < x < 1120 and 300 < y < 500:
+            return 5
+        elif 795 < x < 1120 and 500 < y < 700:
+            return 8
+        elif 500 <= x <= 725 and 730 <= y <= 955:
+            print(COLLAPSE_MARK1)
+            return COLLAPSE_MARK1[0]
+        elif 800 <= x <= 1055 and 730 <= y <= 955:
+            print(COLLAPSE_MARK2)
+            return COLLAPSE_MARK2[0]
+        else:
+            return 9
+    except IndexError:
+        pass
 
 def entangle_move(x, y):
     """If a player clicks on a valid square, 2 marks will be
@@ -181,7 +182,6 @@ def collapse(box, mark):
                 window_surface.blit(text1, text_rect)
 
 
-
 def create_grid():
     """Creates the grid for Tic-Tac-Toe"""
     window_surface.fill(WHITE)
@@ -223,17 +223,21 @@ def choices(colour_1, colour_2):
     font_choice_1 = pygame.font.Font('freesansbold.ttf', 40)
     font_choice_2 = pygame.font.Font('freesansbold.ttf', 40)
 
-    text_choice_1 = font_choice_1.render(f"{COLLAPSE_MARK1[0]}", True, colour_1, colour_2)
-    text_choice_2 = font_choice_2.render(f"{COLLAPSE_MARK2[0]}", True, colour_1, colour_2)
+    try:
+        text_choice_1 = font_choice_1.render(f"{COLLAPSE_MARK1[0]}", True, colour_1, colour_2)
+        text_choice_2 = font_choice_2.render(f"{COLLAPSE_MARK2[0]}", True, colour_1, colour_2)
 
-    text_choice_1_rect = text_choice_1.get_rect()
-    text_choice_2_rect = text_choice_2.get_rect()
+        text_choice_1_rect = text_choice_1.get_rect()
+        text_choice_2_rect = text_choice_2.get_rect()
 
-    text_choice_1_rect.center = (225 + 300, 100 + 603 + 40)
-    text_choice_2_rect.center = (225 + 600, 100 + 603 + 40)
+        text_choice_1_rect.center = (225 + 300, 100 + 603 + 40)
+        text_choice_2_rect.center = (225 + 600, 100 + 603 + 40)
 
-    window_surface.blit(text_choice_1, text_choice_1_rect)
-    window_surface.blit(text_choice_2, text_choice_2_rect)
+        window_surface.blit(text_choice_1, text_choice_1_rect)
+        window_surface.blit(text_choice_2, text_choice_2_rect)
+
+    except IndexError:
+        pass
 
 
 pygame.init()
@@ -272,11 +276,26 @@ is_running = True
 start = False
 entangle = False
 colpse = False
+game_over = False
 game = TicTacToe()
 score_p1 = 0
 score_p2 = 0
 
+GAME_X = WIDTH/2
+GAME_Y = HEIGHT/2
+
+font_game = pygame.font.Font('freesansbold.ttf', 44)
+
 while is_running:
+    TITLE = f"It's {game.whose_turn()}'s Turn"
+    if game_over:
+        window_surface.fill(WHITE)
+        stuff = font_game.render("GAME OVER (Press R or Click Anywhere to restart)", True, (255, 0, 0))
+        stuff_rect = stuff.get_rect()
+        stuff_rect.center = (GAME_X, GAME_Y)
+        window_surface.blit(stuff, stuff_rect)
+        game.reset()
+
     if not start:
         window_surface.blit(text, text.get_rect())
         for i in range(len(INSTRUCTIONS)):
@@ -285,7 +304,7 @@ while is_running:
         window_surface.blit(image, (0, 0))
         window_surface.blit(image2, (1145, 0))
 
-        text_title = font_title.render("QUANTUM TIC-TAC-TOE", True, GREEN, WHITE)
+        text_title = font_title.render(TITLE, True, GREEN, WHITE)
         text_score_1 = font_score.render("X SCORE", True, RED, WHITE)
         text_score_2 = font_score.render("O SCORE", True, BLUE, WHITE)
         score_1 = font_score.render(f"{score_p1}", True, RED, WHITE)
@@ -318,6 +337,11 @@ while is_running:
             x = event.pos[0]
             y = event.pos[1]
             position = get_position(x, y)
+
+            if game_over:
+                game_over = False
+                create_grid()
+
             if not start:
                 start = True
                 create_grid()
@@ -340,27 +364,16 @@ while is_running:
                     title_rect = text_title.get_rect()
                     title_rect.center = (WIDTH / 2, 50)
                     window_surface.blit(text_title, title_rect)
+                    game_over = True
                     game.reset()
                     break
 
                 elif winners["X"] > 0 or winners["O"] > 0:
 
-                    text_score_1 = font_score.render("X SCORE", True, RED, WHITE)
-                    text_score_2 = font_score.render("O SCORE", True, BLUE, WHITE)
-                    score_1 = font_score.render(f"{winners['X']}", True, RED, WHITE)
-                    score_2 = font_score.render(f"{winners['O']}", True, BLUE, WHITE)
-                    text_score_1_rect = text_score_1.get_rect()
-                    text_score_2_rect = text_score_2.get_rect()
-                    score_1_rect = score_1.get_rect()
-                    score_2_rect = score_2.get_rect()
-                    text_score_1_rect.center = (205 / 2, 246 + 30)
-                    text_score_2_rect.center = (WIDTH - 205 / 2, 246 + 30)
-                    score_1_rect.center = (205 / 2, 246 + 60)
-                    score_2_rect.center = (WIDTH - 205 / 2, 246 + 60)
-                    window_surface.blit(text_score_1, text_score_1_rect)
-                    window_surface.blit(text_score_2, text_score_2_rect)
-                    window_surface.blit(score_1, score_1_rect)
-                    window_surface.blit(score_2, score_2_rect)
+                    score_p1 += winners["X"]
+                    score_p2 += winners["O"]
+
+                    game_over = True
                     game.reset()
                     break
 
