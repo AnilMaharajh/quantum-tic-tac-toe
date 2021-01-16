@@ -45,7 +45,6 @@ def place_marker(x, y, game: TicTacToe):
             position = get_position(x, y)
             mark = game.place_piece(position)
             if mark != "F":
-                print(mark)
                 font1 = pygame.font.Font('freesansbold.ttf', 32)
                 text1 = font1.render(f'{mark}', True, BLACK, WHITE)
                 text_rect = text1.get_rect()
@@ -72,7 +71,6 @@ def entangled_boxes(entangle):
     # Changes all the valid moves to False
     for key in VALID_MOVES.keys():
         VALID_MOVES[key] = False
-    print("Entangle: ", entangle)
     for box in entangle:
         VALID_MOVES[box] = True
         pygame.draw.rect(
@@ -89,7 +87,6 @@ def get_position(x: int, y: int):
     :return: an integer from 0-8 corresponding to a board position
     """
     try:
-        print(x, y)
         if 255 < x < 525 and 100 < y < 300:
             return 0
         elif 255 < x < 525 and 300 < y < 500:
@@ -109,15 +106,14 @@ def get_position(x: int, y: int):
         elif 795 < x < 1120 and 500 < y < 700:
             return 8
         elif 500 <= x <= 725 and 730 <= y <= 955:
-            print(COLLAPSE_MARK1)
             return COLLAPSE_MARK1[0]
         elif 800 <= x <= 1055 and 730 <= y <= 955:
-            print(COLLAPSE_MARK2)
             return COLLAPSE_MARK2[0]
         else:
             return 9
     except IndexError:
         pass
+
 
 def entangle_move(x, y):
     """If a player clicks on a valid square, 2 marks will be
@@ -125,7 +121,6 @@ def entangle_move(x, y):
     """
     index = get_position(x, y)
     if 0 <= index <= 8 and VALID_MOVES[index]:
-        print(COLLAPSE_MARK1, COLLAPSE_MARK2)
         COLLAPSE_MARK1.append(game.board[index][0])
         COLLAPSE_MARK2.append(game.board[index][-1])
         CHOSEN_BOX.append(index)
@@ -141,9 +136,8 @@ def collapse(box, mark):
     """
     coll = game.collapse(box, mark)
     coll[box] = mark
-    print(coll)
+
     for key, value in coll.items():
-        print(key, value)
         game.place_classical(key, value)
         pygame.draw.rect(
             window_surface,
@@ -158,14 +152,10 @@ def collapse(box, mark):
             KEY_COOR[CONVERT_POS[key]][1] + KEY_COOR[CONVERT_POS[key]][3] / 2
         )
         window_surface.blit(text1, text_rect)
-    print(game.boxes_filled)
-    print(game.board)
+
     if game.boxes_filled == 8:
-        print("WOrky")
         for i in range(len(game.board)):
-            print(type(game.board[i]))
             if isinstance(game.board[i], List):
-                print(True)
                 game.place_classical(i, game.whose_turn() + str(game.subscript))
                 font1 = pygame.font.Font('freesansbold.ttf', 120)
                 pygame.draw.rect(
@@ -281,8 +271,8 @@ game = TicTacToe()
 score_p1 = 0
 score_p2 = 0
 
-GAME_X = WIDTH/2
-GAME_Y = HEIGHT/2
+GAME_X = WIDTH / 2
+GAME_Y = HEIGHT / 2
 
 font_game = pygame.font.Font('freesansbold.ttf', 44)
 
@@ -294,7 +284,6 @@ while is_running:
         stuff_rect = stuff.get_rect()
         stuff_rect.center = (GAME_X, GAME_Y)
         window_surface.blit(stuff, stuff_rect)
-        game.reset()
 
     if not start:
         window_surface.blit(text, text.get_rect())
@@ -339,8 +328,18 @@ while is_running:
             position = get_position(x, y)
 
             if game_over:
+                entangle = False
+                colpse = False
+                score_p1 = 0
+                score_p2 = 0
                 game_over = False
+                game.reset()
                 create_grid()
+
+                choices(WHITE, WHITE)
+                for i in range(len(game.board)):
+                    # If a box was entangled return it back to Black
+                    VALID_MOVES[i] = True
 
             if not start:
                 start = True
@@ -350,7 +349,6 @@ while is_running:
                 entangle = place_marker(x, y, game)
 
             elif start and entangle and type(position) == int:
-                print(VALID_MOVES)
                 entangle_move(event.pos[0], event.pos[1])
                 choices(WHITE, RED)
                 colpse = True
@@ -358,7 +356,6 @@ while is_running:
             elif start and colpse and type(position) == str:
                 collapse(CHOSEN_BOX[0], position)
                 winners = game.check_winner()
-                print(winners)
                 if winners["X"] == -1 or winners["O"] == -1:
                     text_title = font_title.render("DRAW", True, GREEN, WHITE)
                     title_rect = text_title.get_rect()
@@ -369,12 +366,9 @@ while is_running:
                     break
 
                 elif winners["X"] > 0 or winners["O"] > 0:
-
                     score_p1 += winners["X"]
                     score_p2 += winners["O"]
-
                     game_over = True
-                    game.reset()
                     break
 
                 choices(WHITE, WHITE)
