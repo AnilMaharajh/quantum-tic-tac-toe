@@ -83,14 +83,14 @@ class Graph():
             found = False
             points = [coord]
             while len(stack) > 0 and found == False:
-                neighbor, compare = stack.pop(0)
+                neighbor, compare = stack.pop(-1)
                 points.append(neighbor)
                 if neighbor[compare] == coord[0] or neighbor[compare] == coord[1]:
                     found = True
                 else:
                     more_neighbors = self.neighbors(neighbor)
                     for n in more_neighbors:
-                        stack.insert(0, n)
+                        stack.append(n)
                     if len(more_neighbors) == 0:
                         points = [coord]
             if found:
@@ -111,8 +111,7 @@ class Graph():
                 found.append((edge, box))
         return found
 
-
-    def collapse(self, box: int, mark:str):
+    def collapse(self, box: int, mark: str):
         """
          Collapses all the boxes related to the cyclic entanglement
         into classical tictactoe boxes
@@ -148,10 +147,10 @@ class Graph():
 
 if __name__ == "__main__":
     g = Graph()
-    g.addEdge(5, 4, "X1")
-    g.addEdge(4, 5, "O2")
-    g.addEdge(5, 8, "X3")
-    #g.addEdge(5, 6, "O4")
+    g.addEdge(4, 5, "X1")
+    g.addEdge(5, 7, "O2")
+    g.addEdge(4, 5, "X3")
+    # g.addEdge(5, 6, "O4")
     print(g.cyclicEntanglement())
-    print(g.collapse(4,"X1"))
+    print(g.collapse(4, "X1"))
     print(g.edges)
