@@ -86,6 +86,7 @@ def get_position(x: int, y: int):
     returns the position where the click corresponds to the board
     :return: an integer from 0-8 corresponding to a board position
     """
+
     print(x, y)
     if 255 < x < 525 and 100 < y < 300:
         return 0
@@ -106,8 +107,10 @@ def get_position(x: int, y: int):
     elif 795 < x < 1120 and 500 < y < 700:
         return 8
     elif 500 <= x <= 725 and 730 <= y <= 955:
+        print(COLLAPSE_MARK1)
         return COLLAPSE_MARK1[0]
-    elif 825 <= x <= 855 and 730 <= y <= 955:
+    elif 800 <= x <= 1055 and 730 <= y <= 955:
+        print(COLLAPSE_MARK2)
         return COLLAPSE_MARK2[0]
     else:
         return 9
@@ -118,7 +121,8 @@ def entangle_move(x, y):
     displayed for the user to choose for a collapse
     """
     index = get_position(x, y)
-    if VALID_MOVES[index]:
+    if 0 <= index <= 8 and VALID_MOVES[index]:
+        print(COLLAPSE_MARK1, COLLAPSE_MARK2)
         COLLAPSE_MARK1.append(game.board[index][0])
         COLLAPSE_MARK2.append(game.board[index][-1])
         CHOSEN_BOX.append(index)
@@ -137,7 +141,8 @@ def collapse(box, mark):
     print(coll)
     for key, value in coll.items():
         if VALID_MOVES[key]:
-            game.place_classical(coll)
+            print(key, value)
+            game.place_classical(key, value)
             pygame.draw.rect(
                 window_surface,
                 BLACK,
@@ -189,13 +194,13 @@ def create_grid():
             )
 
 
-def choices():
+def choices(colour_1, colour_2):
     """Puts up the choices of which token should be on the board"""
     font_choice_1 = pygame.font.Font('freesansbold.ttf', 40)
     font_choice_2 = pygame.font.Font('freesansbold.ttf', 40)
 
-    text_choice_1 = font_choice_1.render(f"{COLLAPSE_MARK1[0]}", True, BLACK, RED)
-    text_choice_2 = font_choice_2.render(f"{COLLAPSE_MARK2[0]}", True, WHITE, BLUE)
+    text_choice_1 = font_choice_1.render(f"{COLLAPSE_MARK1[0]}", True, colour_1, colour_2)
+    text_choice_2 = font_choice_2.render(f"{COLLAPSE_MARK2[0]}", True, colour_1, colour_2)
 
     text_choice_1_rect = text_choice_1.get_rect()
     text_choice_2_rect = text_choice_2.get_rect()
@@ -300,21 +305,46 @@ while is_running:
 
             elif start and not entangle:
                 entangle = place_marker(x, y, game)
-                print(entangle)
 
             elif start and entangle and type(position) == int:
-                print("entangle happens")
+                print(VALID_MOVES)
                 entangle_move(event.pos[0], event.pos[1])
-                choices()
+                choices(WHITE, RED)
                 colpse = True
 
             elif start and colpse and type(position) == str:
-                print("ay o collapse")
                 collapse(CHOSEN_BOX[0], position)
                 winners = game.check_winner()
-                if winners["X"] > 0 or winners["O"] > 0:
-                    print("Winner")
+                print(winners)
+                if winners["X"] == -1 or winners["O"] == -1:
+                    text_title = font_title.render("DRAW", True, GREEN, WHITE)
+                    title_rect = text_title.get_rect()
+                    title_rect.center = (WIDTH / 2, 50)
+                    window_surface.blit(text_title, title_rect)
+                    game.reset()
                     break
+
+                elif winners["X"] > 0 or winners["O"] > 0:
+                    text_score_1 = font_score.render("X SCORE", True, RED, WHITE)
+                    text_score_2 = font_score.render("O SCORE", True, BLUE, WHITE)
+                    score_1 = font_score.render(f"{winners['X']}", True, RED, WHITE)
+                    score_2 = font_score.render(f"{winners['O']}", True, BLUE, WHITE)
+                    text_score_1_rect = text_score_1.get_rect()
+                    text_score_2_rect = text_score_2.get_rect()
+                    score_1_rect = score_1.get_rect()
+                    score_2_rect = score_2.get_rect()
+                    text_score_1_rect.center = (205 / 2, 246 + 30)
+                    text_score_2_rect.center = (WIDTH - 205 / 2, 246 + 30)
+                    score_1_rect.center = (205 / 2, 246 + 60)
+                    score_2_rect.center = (WIDTH - 205 / 2, 246 + 60)
+                    window_surface.blit(text_score_1, text_score_1_rect)
+                    window_surface.blit(text_score_2, text_score_2_rect)
+                    window_surface.blit(score_1, score_1_rect)
+                    window_surface.blit(score_2, score_2_rect)
+                    game.reset()
+                    break
+
+                choices(WHITE, WHITE)
                 entangle = False
                 colpse = False
                 CHOSEN_BOX.pop()
@@ -332,6 +362,5 @@ while is_running:
                         VALID_MOVES[i] = False
                     else:
                         VALID_MOVES[i] = True
-                print(VALID_MOVES)
 
     pygame.display.update()

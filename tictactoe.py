@@ -45,6 +45,7 @@ class TicTacToe:
         Checks if there is a winning position by looking at the row and columns
         :return: the mark piece of either X or O if it satisfy a winning condition. Otherwise return None
         """
+
         wins = {"X": 0, "O": 0}
         marks = {"X": [], "O": []}
         # Checks which subscript is the largest for a comparision, if the other player gets a classical win
@@ -68,6 +69,10 @@ class TicTacToe:
         if self.checks_str(2, 4, 6) and self.board[2][0] == self.board[4][0] == self.board[6][0]:
             marks[self.board[2][0]].append(max(self.board[2][1], self.board[4][1], self.board[6][1]))
 
+        # If there is a draw
+        if self.boxes_filled == 9 and wins["X"] == 0 and wins["O"] == 0:
+            return {"X": -1, "O": -1}
+
         x, o = marks["X"], marks["O"]
         num_x, num_o, num_compare = len(x), len(o), len(x)
         x.sort()
@@ -79,13 +84,14 @@ class TicTacToe:
         elif num_x < num_o:
             num_compare = num_o - num_x
             wins["O"] += num_compare
-        for i in range(num_compare):
-            if x[i] < o[i]:
-                wins["X"] += 1
-                wins["O"] += 0.5
-            else:
-                wins["O"] += 1
-                wins["X"] += 0.5
+        if num_x != 0 and num_o != 0:
+            for i in range(num_compare):
+                if x[i] < o[i]:
+                    wins["X"] += 1
+                    wins["O"] += 0.5
+                else:
+                    wins["O"] += 1
+                    wins["X"] += 0.5
 
         return wins
 
@@ -126,20 +132,21 @@ class TicTacToe:
         """
         return self.graph.collapse(box, mark)
 
-    def place_classical(self, box: Dict):
+    def place_classical(self, index: int, mark: str):
         """
         Places classical pieces corresponding to a collapse
-        :param box: a dictionary mapping each box to a counter with subscripts
+        :param mark:
+        :param index:
         """
-        for key, value in box.items():
-            self.board[key] = value
-            self.boxes_filled += 1
+        self.board[index] = mark
+        self.boxes_filled += 1
         if self.boxes_filled == 8:
             for i in range(len(self.board)):
                 # Checks if its a list
-                if self.board[i]:
+                if type(self.board[i]) == List:
                     mark = self.whose_turn() + str(self.subscript)
                     self.board[i] = mark
+        print(self.board)
 
     def place_piece(self, position):
         """
@@ -166,3 +173,7 @@ class TicTacToe:
         self.mark_counter = 0
         self.subscript += 1
         self.mark_counter += 1
+        self.board = BOARD
+        self.graph = Graph()
+        self.mark_pos = []
+        self.boxes_filled = 0
