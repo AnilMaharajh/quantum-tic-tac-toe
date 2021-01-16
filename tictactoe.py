@@ -113,6 +113,7 @@ class TicTacToe:
         :return: list boxes involved in cyclic entanglement eligible for collapse
         """
         cycle = self.graph.cyclicEntanglement()
+        print("Cycle: ", cycle)
         boxes = []
         for edge in cycle:
             if edge[0] not in boxes:
@@ -140,13 +141,7 @@ class TicTacToe:
         """
         self.board[index] = mark
         self.boxes_filled += 1
-        if self.boxes_filled == 8:
-            for i in range(len(self.board)):
-                # Checks if its a list
-                if type(self.board[i]) == List:
-                    mark = self.whose_turn() + str(self.subscript)
-                    self.board[i] = mark
-        print(self.board)
+
 
     def place_piece(self, position):
         """
@@ -161,7 +156,9 @@ class TicTacToe:
                 self.mark_pos.append(position)
                 self.mark_counter += 1
                 if self.mark_counter == 2:
-                    self.graph.addEdge(self.mark_pos.pop(0), self.mark_pos.pop(0), mark)
+                    x = self.mark_pos.pop(0)
+                    y = self.mark_pos.pop(0)
+                    self.graph.addEdge(x, y, mark)
                     self.mark_counter = 0
                     self.subscript += 1
                 return mark

@@ -1,3 +1,5 @@
+from typing import List
+
 import pygame
 from tictactoe import TicTacToe
 
@@ -70,7 +72,7 @@ def entangled_boxes(entangle):
     # Changes all the valid moves to False
     for key in VALID_MOVES.keys():
         VALID_MOVES[key] = False
-    print(entangle)
+    print("Entangle: ", entangle)
     for box in entangle:
         VALID_MOVES[box] = True
         pygame.draw.rect(
@@ -140,22 +142,44 @@ def collapse(box, mark):
     coll[box] = mark
     print(coll)
     for key, value in coll.items():
-        if VALID_MOVES[key]:
-            print(key, value)
-            game.place_classical(key, value)
-            pygame.draw.rect(
-                window_surface,
-                BLACK,
-                KEY_COOR[CONVERT_POS[key]]
-            )
-            font1 = pygame.font.Font('freesansbold.ttf', 120)
-            text1 = font1.render(f"{value}", True, BLACK, WHITE)
-            text_rect = text1.get_rect()
-            text_rect.center = (
-                KEY_COOR[CONVERT_POS[key]][0] + KEY_COOR[CONVERT_POS[key]][2] / 2,
-                KEY_COOR[CONVERT_POS[key]][1] + KEY_COOR[CONVERT_POS[key]][3] / 2
-            )
-            window_surface.blit(text1, text_rect)
+        print(key, value)
+        game.place_classical(key, value)
+        pygame.draw.rect(
+            window_surface,
+            BLACK,
+            KEY_COOR[CONVERT_POS[key]]
+        )
+        font1 = pygame.font.Font('freesansbold.ttf', 120)
+        text1 = font1.render(f"{value}", True, BLACK, WHITE)
+        text_rect = text1.get_rect()
+        text_rect.center = (
+            KEY_COOR[CONVERT_POS[key]][0] + KEY_COOR[CONVERT_POS[key]][2] / 2,
+            KEY_COOR[CONVERT_POS[key]][1] + KEY_COOR[CONVERT_POS[key]][3] / 2
+        )
+        window_surface.blit(text1, text_rect)
+    print(game.boxes_filled)
+    print(game.board)
+    if game.boxes_filled == 8:
+        print("WOrky")
+        for i in range(len(game.board)):
+            print(type(game.board[i]))
+            if isinstance(game.board[i], List):
+                print(True)
+                game.place_classical(i, game.whose_turn() + str(game.subscript))
+                font1 = pygame.font.Font('freesansbold.ttf', 120)
+                pygame.draw.rect(
+                    window_surface,
+                    BLACK,
+                    KEY_COOR[CONVERT_POS[i]]
+                )
+                text1 = font1.render(f"{game.whose_turn() + str(game.subscript)}", True, BLACK, WHITE)
+                text_rect = text1.get_rect()
+                text_rect.center = (
+                    KEY_COOR[CONVERT_POS[i]][0] + KEY_COOR[CONVERT_POS[i]][2] / 2,
+                    KEY_COOR[CONVERT_POS[i]][1] + KEY_COOR[CONVERT_POS[i]][3] / 2
+                )
+                window_surface.blit(text1, text_rect)
+
 
 
 def create_grid():
@@ -228,7 +252,6 @@ window_surface.fill(WHITE)
 
 font_score = pygame.font.Font('freesansbold.ttf', 20)
 
-
 INSTRUCTIONS = []
 INSTRUCTIONS_RECT = []
 file = open("Instructions.txt")
@@ -239,15 +262,11 @@ for line in a:
         instruct = font.render(line.strip(), True, GREEN, RED)
         INSTRUCTIONS.append(instruct)
         rect = instruct.get_rect()
-        rect.center = (WIDTH/2, acc)
+        rect.center = (WIDTH / 2, acc)
         acc += 30
         INSTRUCTIONS_RECT.append(rect)
 
-
 file.close()
-# text_instructions = font.render(INSTRUCTIONS, True, GREEN, RED)
-# text_instructions_rect = text_instructions.get_rect()
-# text_instructions_rect.center = (WIDTH/2, HEIGHT/2)
 
 is_running = True
 start = False
@@ -325,6 +344,7 @@ while is_running:
                     break
 
                 elif winners["X"] > 0 or winners["O"] > 0:
+
                     text_score_1 = font_score.render("X SCORE", True, RED, WHITE)
                     text_score_2 = font_score.render("O SCORE", True, BLUE, WHITE)
                     score_1 = font_score.render(f"{winners['X']}", True, RED, WHITE)
